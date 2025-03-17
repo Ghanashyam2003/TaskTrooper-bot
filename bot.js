@@ -3,17 +3,12 @@ require("dotenv").config();
 
 // Import required packages
 const TelegramBot = require("node-telegram-bot-api");
-//const OpenAI = require("openai");
 const schedule = require("node-schedule");
 const axios = require("axios");
 
 // Initialize Telegram Bot
 const bot = new TelegramBot(process.env.BOT_TOKEN, { polling: true });
 
-// Initialize OpenAI
-// const openai = new OpenAI({
-//   apiKey: process.env.OPENAI_API_KEY, // Ensure your .env file has this key
-// });
 // Welcome message on /start
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
@@ -164,24 +159,22 @@ bot.onText(/\/help/, (msg) => {
 
   const helpMessage = `
     🤖 *TaskTrooper Bot - Command Guide*  
-  
+
     ✅ *Task Management:*  
     - \`/add [task]\` - Add a new task.  
     - \`/tasks\` - View all your tasks.  
     - \`/clear\` - Clear all your tasks.  
     - \`/stats\` - Check task statistics.  
     - *Automatic Reminder:* Receive your tasks every day at *9 AM*.
-  
+
     🎯 *Fun & Motivation:*  
     - \`/joke\` - Get a random programming joke.  
     - \`/randomtask\` - Get a random productivity task.  
     - \`/motivate\` - Receive a motivational quote.  
-  
+
     ℹ️ *Other Commands:*  
     - \`/start\` - Welcome message.  
     - \`/help\` - Show this help menu.  
-  
-    
     `;
 
   bot.sendMessage(chatId, helpMessage, { parse_mode: "Markdown" });
