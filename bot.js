@@ -3,7 +3,7 @@ require("dotenv").config();
 
 // Import required packages
 const TelegramBot = require("node-telegram-bot-api");
-const OpenAI = require("openai");
+//const OpenAI = require("openai");
 const schedule = require("node-schedule");
 const axios = require("axios");
 
@@ -11,9 +11,9 @@ const axios = require("axios");
 const bot = new TelegramBot(process.env.BOT_TOKEN, { polling: true });
 
 // Initialize OpenAI
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY, // Ensure your .env file has this key
-});
+// const openai = new OpenAI({
+//   apiKey: process.env.OPENAI_API_KEY, // Ensure your .env file has this key
+// });
 // Welcome message on /start
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
@@ -65,21 +65,19 @@ bot.onText(/\/tasks/, (msg) => {
 
 // Schedule daily reminder at 9 AM
 schedule.scheduleJob("0 9 * * *", () => {
-    Object.keys(tasks).forEach((chatId) => {
-      const userTasks = tasks[chatId];
-      if (userTasks && userTasks.length > 0) {
-        const taskList = userTasks
-          .map((task, index) => `${index + 1}. ${task}`)
-          .join("\n");
-        bot.sendMessage(
-          chatId,
-          `⏰ Reminder! Your tasks for today:\n${taskList}`
-        );
-      }
-    });
+  Object.keys(tasks).forEach((chatId) => {
+    const userTasks = tasks[chatId];
+    if (userTasks && userTasks.length > 0) {
+      const taskList = userTasks
+        .map((task, index) => `${index + 1}. ${task}`)
+        .join("\n");
+      bot.sendMessage(
+        chatId,
+        `⏰ Reminder! Your tasks for today:\n${taskList}`
+      );
+    }
   });
-  
-  
+});
 
 // Function to get a random programming joke
 async function getJoke() {
@@ -108,64 +106,63 @@ bot.onText(/\/joke/, async (msg) => {
   bot.sendMessage(chatId, joke);
 });
 
-
 // Clear all tasks
 bot.onText(/\/clear/, (msg) => {
-    const chatId = msg.chat.id;
-    if (tasks[chatId] && tasks[chatId].length > 0) {
-      delete tasks[chatId];
-      bot.sendMessage(chatId, "🗑️ All your tasks have been cleared!");
-    } else {
-      bot.sendMessage(chatId, "📭 No tasks to clear.");
-    }
-  });
-  
-  // Suggest a random productivity task
-  bot.onText(/\/randomtask/, (msg) => {
-    const chatId = msg.chat.id;
-    const randomTasks = [
-      "📚 Read a tech blog.",
-      "💻 Practice coding for 30 minutes.",
-      "📊 Organize your daily schedule.",
-      "🚶 Take a 5-minute walk.",
-      "📖 Learn a new programming concept.",
-    ];
-    const randomTask =
-      randomTasks[Math.floor(Math.random() * randomTasks.length)];
-    bot.sendMessage(chatId, `🔔 Try this task: ${randomTask}`);
-  });
-  
-  // Send a motivational quote
-  bot.onText(/\/motivate/, (msg) => {
-    const chatId = msg.chat.id;
-    const quotes = [
-      "🚀 *Success is the sum of small efforts repeated day in and day out.*",
-      "🌟 *Your only limit is your mind.*",
-      "💡 *Believe you can and you're halfway there.*",
-      "🔥 *Don't stop when you're tired, stop when you're done.*",
-      "🏆 *The secret of getting ahead is getting started.*",
-    ];
-    const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
-    bot.sendMessage(chatId, randomQuote, { parse_mode: "Markdown" });
-  });
-  
-  // Show task statistics
-  bot.onText(/\/stats/, (msg) => {
-    const chatId = msg.chat.id;
-    const taskCount = tasks[chatId] ? tasks[chatId].length : 0;
-  
-    const statsMessage = taskCount
-      ? `📊 You have *${taskCount}* tasks in your list.`
-      : "📭 You have no tasks. Add one using /add [task].";
-  
-    bot.sendMessage(chatId, statsMessage, { parse_mode: "Markdown" });
-  });
-  
-  // Update the /help command to show new features
-  bot.onText(/\/help/, (msg) => {
-    const chatId = msg.chat.id;
-  
-    const helpMessage = `
+  const chatId = msg.chat.id;
+  if (tasks[chatId] && tasks[chatId].length > 0) {
+    delete tasks[chatId];
+    bot.sendMessage(chatId, "🗑️ All your tasks have been cleared!");
+  } else {
+    bot.sendMessage(chatId, "📭 No tasks to clear.");
+  }
+});
+
+// Suggest a random productivity task
+bot.onText(/\/randomtask/, (msg) => {
+  const chatId = msg.chat.id;
+  const randomTasks = [
+    "📚 Read a tech blog.",
+    "💻 Practice coding for 30 minutes.",
+    "📊 Organize your daily schedule.",
+    "🚶 Take a 5-minute walk.",
+    "📖 Learn a new programming concept.",
+  ];
+  const randomTask =
+    randomTasks[Math.floor(Math.random() * randomTasks.length)];
+  bot.sendMessage(chatId, `🔔 Try this task: ${randomTask}`);
+});
+
+// Send a motivational quote
+bot.onText(/\/motivate/, (msg) => {
+  const chatId = msg.chat.id;
+  const quotes = [
+    "🚀 *Success is the sum of small efforts repeated day in and day out.*",
+    "🌟 *Your only limit is your mind.*",
+    "💡 *Believe you can and you're halfway there.*",
+    "🔥 *Don't stop when you're tired, stop when you're done.*",
+    "🏆 *The secret of getting ahead is getting started.*",
+  ];
+  const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+  bot.sendMessage(chatId, randomQuote, { parse_mode: "Markdown" });
+});
+
+// Show task statistics
+bot.onText(/\/stats/, (msg) => {
+  const chatId = msg.chat.id;
+  const taskCount = tasks[chatId] ? tasks[chatId].length : 0;
+
+  const statsMessage = taskCount
+    ? `📊 You have *${taskCount}* tasks in your list.`
+    : "📭 You have no tasks. Add one using /add [task].";
+
+  bot.sendMessage(chatId, statsMessage, { parse_mode: "Markdown" });
+});
+
+// Update the /help command to show new features
+bot.onText(/\/help/, (msg) => {
+  const chatId = msg.chat.id;
+
+  const helpMessage = `
     🤖 *TaskTrooper Bot - Command Guide*  
   
     ✅ *Task Management:*  
@@ -186,7 +183,6 @@ bot.onText(/\/clear/, (msg) => {
   
     
     `;
-  
-    bot.sendMessage(chatId, helpMessage, { parse_mode: "Markdown" });
-  });
-  
+
+  bot.sendMessage(chatId, helpMessage, { parse_mode: "Markdown" });
+});
